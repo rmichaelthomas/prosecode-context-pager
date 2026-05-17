@@ -1,7 +1,7 @@
-# CLAUDE.md - Behavioral Contract for prosecode-heap-pager
+# CLAUDE.md - Behavioral Contract for prosecode-context-pager
 
 ## Project Purpose
-prosecode-heap-pager is a token-conscious context lifecycle manager for LLM prompt streams. It profiles historical conversation blocks, scores their contextual relevance against active Intent IR verbs, and applies deterministic paging operations (retain, page, evict) to update an active Liminate (.limn) session contract.
+prosecode-context-pager is a token-conscious context lifecycle manager for LLM prompt streams. It profiles historical conversation blocks, scores their contextual relevance against active Intent IR verbs, and applies deterministic paging operations (retain, page, evict) to update an active Liminate (.limn) session contract.
 
 ## Architecture Guidelines
 - Strict Zero-Dependency Rule: Use only native Python 3 standard library utilities. Do not add external tokenizers or machine learning frameworks.

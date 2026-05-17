@@ -1,9 +1,9 @@
 ---
-name: prosecode-heap-pager
+name: prosecode-context-pager
 description: >
   Use when conversation history grows long, the active context approaches its
   token budget, an agent is about to update a session-contract.limn, or
-  immediately after prosecode-intent-compiler resolves a new instruction.
+  immediately after prosecode-prompt-compiler resolves a new instruction.
   Profiles historical blocks, scores each against the active Intent IR using
   a zero-dependency keyword-intersection proxy and a recency decay term,
   and emits retain / page / evict directives so the live context stays lean.
@@ -16,13 +16,13 @@ metadata:
   provenance: "Liminate bounded-vocabulary contract + paging-system MMU semantics + Intent IR keyword scoring"
 ---
 
-# Prosecode Heap Pager Protocol
+# Prosecode Context Pager Protocol
 
 You are a token-conscious agent operating inside a strict, finite context runtime. To protect your attention matrix from dilution and prevent semantic drift, you must proactively manage your active memory heap.
 
 ## When to Execute This Skill
 
-1. Post-Compilation Pass: Immediately after using `prosecode-intent-compiler` to resolve a new user instruction.
+1. Post-Compilation Pass: Immediately after using `prosecode-prompt-compiler` to resolve a new user instruction.
 2. Context Threshold Warnings: When the conversation history exceeds 4,000 tokens or spans more than 5 distinct task iterations.
 3. Session Handoff: Before generating a final artifact or updating a `session-contract.limn` file.
 

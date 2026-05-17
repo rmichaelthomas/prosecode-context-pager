@@ -1,4 +1,4 @@
-"""Paging Engine for prosecode-heap-pager.
+"""Paging Engine for prosecode-context-pager.
 
 Computes the Retention Score for each historical conversation block and
 classifies it as retain / page / evict. Emissions are appended to a
@@ -137,7 +137,7 @@ def _summary(report):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(description="prosecode-heap-pager engine")
+    p = argparse.ArgumentParser(description="prosecode-context-pager engine")
     p.add_argument("--history", required=True)
     p.add_argument("--contract", required=True)
     p.add_argument("--alpha", type=float, default=0.7)

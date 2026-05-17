@@ -1,34 +1,45 @@
-# prosecode-heap-pager
+# prosecode-context-pager
 
-A skill that decides which parts of a long conversation an LLM should keep, summarize, or throw away.
+Decides which parts of a long conversation an agent should keep, summarize, or throw away.
 
-It reads the chat history one block at a time, scores each block against what the agent is currently trying to do, and writes the decision into a [session contract](https://github.com/rmichaelthomas/session-contracts) so the next pass knows what was kept and what was let go.
+It reads the chat history one block at a time, scores each block against what the agent is currently trying to do, and writes the decision into a [session contract](https://github.com/rmichaelthomas/liminate-session-contracts) so the next pass knows what was kept and what was let go.
 
 ## What it does
 
 For every historical block in the active window the pager picks one of three actions:
 
 | Directive | What happens to the block | What kind of block |
-| --- | --- | --- |
+|---|---|---|
 | `retain` | Stays in the active context, untouched. | Current goals, open questions, the slot values the agent is still working with. |
-| `page` | Gets replaced by a short summary stub. The full text is moved out of the live window but can be pulled back. | Resolved sub-tasks, older analytical passages, closed arguments. |
+| `page` | Gets replaced by a short summary stub. The full text moves out of the live window but can be pulled back. | Resolved sub-tasks, older analytical passages, closed arguments. |
 | `evict` | Removed from the stream. | Typos that were corrected, syntax errors that were fixed, raw logs whose findings have already been written down. |
 
 The decision is deterministic. Same history, same intent, same score, same action. Nothing is dropped silently — every action becomes a line in the session contract.
 
-## Why it exists
+## Example
 
-Long sessions go bad in a predictable way. The window fills up, attention spreads thin, old typos and dead debug loops start competing with the live work, and the model drifts. The usual fixes are blunt — truncate the oldest N tokens, or compress everything that scrolled past some line.
+```
+add "block-0x07" to evicted-blocks
+add "block-0x04" to paged-blocks
+add "block-0x01" to retained-blocks
+set last-pager-pass to 2026-05-17T03:08:12+00:00
+```
 
-This skill does something narrower. It keeps what the agent is actually using right now, summarizes what mattered a few turns ago, and removes what was never going to matter again. The choice is per block, not per range, and it is recorded.
+The pager emits Liminate statements only. Every emitted line is checked against the bounded 35-word vocabulary before it is appended, so a vocabulary slip fails loudly instead of producing a malformed contract.
 
-It is one of three pieces that work together:
+## Part of the Liminate family
 
-- [`prosecode-intent-compiler`](https://github.com/rmichaelthomas/prosecode-intent-compiler) — reads the user's prompt and produces a small Intent IR (verb plus slots).
-- `prosecode-heap-pager` — uses that IR to score and prune the history.
-- [`session-contracts`](https://github.com/rmichaelthomas/session-contracts) — the file the pager writes into, in [Liminate](https://github.com/rmichaelthomas/liminate).
+Liminate is a prose-as-syntax programming language where plain English sentences execute directly. These five repos form a system for writing, verifying, and transferring structured reasoning.
 
-You can use the pager on its own. The other two make it more useful.
+| | Repo | What it does |
+|---|---|---|
+| | [liminate](https://github.com/rmichaelthomas/liminate) | The language and interpreter. Bounded vocabulary, deterministic execution, domain packs. |
+| | [liminate-session-contracts](https://github.com/rmichaelthomas/liminate-session-contracts) | Tracks verified sources, inferred claims, locked decisions, and user corrections as executable `.limn` contracts. |
+| | [prosecode-prompt-compiler](https://github.com/rmichaelthomas/prosecode-prompt-compiler) | Compiles user prompts into structured intent before the agent responds. Seven verbs, twenty-four slots. |
+| **← this repo** | [**prosecode-context-pager**](https://github.com/rmichaelthomas/prosecode-context-pager) | **Scores conversation history against current intent. Decides what to keep, summarize, or drop.** |
+| | [prosecode-handoff-packet](https://github.com/rmichaelthomas/prosecode-handoff-packet) | Packages a working session for another agent to continue — preserving what was verified and what wasn't. |
+
+→ [onesurface.org/liminate](https://onesurface.org/liminate)
 
 ## Install
 
@@ -36,19 +47,19 @@ This skill follows the [agentskills.io](https://agentskills.io) SKILL.md standar
 
 ```bash
 # Claude Code — all projects
-git clone https://github.com/rmichaelthomas/prosecode-heap-pager.git ~/.claude/skills/prosecode-heap-pager
+git clone https://github.com/rmichaelthomas/prosecode-context-pager.git ~/.claude/skills/prosecode-context-pager
 
 # Claude Code — one project
-git clone https://github.com/rmichaelthomas/prosecode-heap-pager.git .claude/skills/prosecode-heap-pager
+git clone https://github.com/rmichaelthomas/prosecode-context-pager.git .claude/skills/prosecode-context-pager
 
 # Codex CLI
-git clone https://github.com/rmichaelthomas/prosecode-heap-pager.git ~/.codex/skills/prosecode-heap-pager
+git clone https://github.com/rmichaelthomas/prosecode-context-pager.git ~/.codex/skills/prosecode-context-pager
 
 # Gemini CLI
-git clone https://github.com/rmichaelthomas/prosecode-heap-pager.git ~/.gemini/skills/prosecode-heap-pager
+git clone https://github.com/rmichaelthomas/prosecode-context-pager.git ~/.gemini/skills/prosecode-context-pager
 
 # Any SKILL.md-compatible agent
-git clone https://github.com/rmichaelthomas/prosecode-heap-pager.git .agents/skills/prosecode-heap-pager
+git clone https://github.com/rmichaelthomas/prosecode-context-pager.git .agents/skills/prosecode-context-pager
 ```
 
 There is nothing to `pip install`. The engine is Python 3 standard library only — no tokenizers, no ML packages, no network calls.
@@ -60,24 +71,15 @@ pip install liminate
 liminate path/to/session-contract.limn
 ```
 
-## Use
+## How it works
 
 ### As a skill
 
 Once the repo is on your skill path, ask the agent to run a paging pass when the context starts feeling heavy:
 
-> "Page the heap against the current intent before we keep going."
+> "Page the context against the current intent before we keep going."
 
-The agent will profile the history, score each block, and append the actions to the session contract as Liminate statements such as:
-
-```
-add "block-0x07" to evicted-blocks
-add "block-0x04" to paged-blocks
-add "block-0x01" to retained-blocks
-set last-pager-pass to 2026-05-17T03:08:12+00:00
-```
-
-Good moments to run it: right after the intent compiler resolves a new instruction, when the conversation crosses several distinct task iterations, and before any handoff that writes a final artifact.
+Good moments to run it: right after the prompt compiler resolves a new instruction, when the conversation crosses several distinct task iterations, and before any handoff that writes a final artifact.
 
 ### As a standalone CLI
 
@@ -94,12 +96,12 @@ What the flags do:
 
 - `--history` — a JSON file with an `intent_ir` keyword list and a list of `blocks`. See `assets/test-history.json` for the schema.
 - `--contract` — the `.limn` file to append decisions to. Created if it does not exist.
-- `--alpha`, `--beta` — weights for the retention score. See below.
+- `--alpha`, `--beta` — weights for the retention score.
 - `--retain-cut`, `--evict-cut` — score thresholds, default `0.55` and `0.20`.
 
 The CLI prints a one-line summary to stdout and a structured JSON record for every block to stderr.
 
-## How the score works
+### How the score works
 
 Each block gets a retention score `R`:
 
@@ -113,14 +115,26 @@ R = alpha * similarity + beta * (1 / (1 + ln(1 + delta_t)))
 
 `R >= retain-cut` is kept. `R < evict-cut` is dropped. Anything in between is paged.
 
-The formula is deliberately boring. It is meant to be readable, predictable, and tunable without machine learning.
+The formula is deliberately boring. Readable, predictable, tunable without machine learning.
 
-## Repository structure
+### Liminate vocabulary gate
+
+The pager only writes statements that fit inside Liminate's bounded 35-word vocabulary. The full set lives in `LIMN_VOCAB` at the top of `scripts/pager.py`. Every emitted statement is validated against that set before it is appended.
+
+### Benchmark
+
+```bash
+python3 scripts/benchmark-pager.py --verbose
+```
+
+Runs the engine against `assets/test-history.json` across four `(alpha, beta)` ratios and asserts the invariants that matter: every `active` block ends up `retain`, every `noise` block ends up `evict` under the intent-heavy settings, and no block is classified twice in a single pass. Exits 0 on a clean pass and prints a matrix of how many blocks landed in each bucket per ratio.
+
+### Repository structure
 
 ```text
-prosecode-heap-pager/
+prosecode-context-pager/
 ├── SKILL.md                     # Agent-facing protocol (agentskills.io frontmatter)
-├── README.md                    # This file
+├── README.md
 ├── references/
 │   └── paging-directives.md     # Formal spec for retain / page / evict
 ├── assets/
@@ -129,20 +143,6 @@ prosecode-heap-pager/
     ├── pager.py                 # The engine, plus a CLI
     └── benchmark-pager.py       # Runs the engine across an (alpha, beta) matrix
 ```
-
-## Benchmark
-
-The benchmark runs the engine against `assets/test-history.json` across four `(alpha, beta)` ratios and asserts the invariants that matter: every `active` block ends up `retain`, every `noise` block ends up `evict` under the intent-heavy settings, and no block is classified twice in a single pass.
-
-```bash
-python3 scripts/benchmark-pager.py --verbose
-```
-
-Exits 0 on a clean pass and prints a matrix of how many blocks landed in each bucket per ratio. Use it as a regression check whenever you change the scoring code.
-
-## Liminate vocabulary
-
-The pager only writes statements that fit inside Liminate's bounded 35-word vocabulary. The full set lives in `LIMN_VOCAB` at the top of `scripts/pager.py`. Every emitted statement is validated against that set before it is appended, so a vocabulary slip fails loudly instead of producing a malformed contract.
 
 ## License
 

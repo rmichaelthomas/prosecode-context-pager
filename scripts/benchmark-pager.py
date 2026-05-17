@@ -1,4 +1,4 @@
-"""Benchmark harness for the prosecode-heap-pager engine.
+"""Benchmark harness for the prosecode-context-pager engine.
 
 Runs the pager across a matrix of (alpha, beta) ratios against
 assets/test-history.json, asserts that:
