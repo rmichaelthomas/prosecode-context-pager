@@ -1,0 +1,3 @@
+tmp*.limn
+__pycache__/
+*.pyc

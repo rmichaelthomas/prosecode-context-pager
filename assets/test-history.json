@@ -1,0 +1,18 @@
+{
+  "current_turn": 15,
+  "intent_ir": ["pager", "retention", "score", "intent", "block", "keyword"],
+  "blocks": [
+    {"id": "block-0x09", "turn": 1, "role": "user", "kind": "noise", "text": "0x4ad9 0xbeef 0xdead 0xfeed b1010101 compiled artifact dump"},
+    {"id": "block-0x08", "turn": 2, "role": "assistant", "kind": "noise", "text": "SyntaxError: unexpected EOF while parsing  def foo("},
+    {"id": "block-0x06", "turn": 4, "role": "user", "kind": "resolved", "text": "Closed loop discussion of how the pager pipeline emits paging directives."},
+    {"id": "block-0x04", "turn": 8, "role": "assistant", "kind": "resolved", "text": "Earlier debug loop: fixed the off by one in the block index helper, all green now."},
+    {"id": "block-0x05", "turn": 6, "role": "user", "kind": "resolved", "text": "Analytical pass on alpha and beta concluded 0.7 and 0.3 are the best score weights."},
+    {"id": "block-0x0c", "turn": 7, "role": "assistant", "kind": "resolved", "text": "Older pass that examined the score calculation in the pager engine; archived."},
+    {"id": "block-0x0a", "turn": 9, "role": "user", "kind": "noise", "text": "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod"},
+    {"id": "block-0x07", "turn": 11, "role": "assistant", "kind": "noise", "text": "teh quikc brwn fox jumpsd ovr teh lazey dog xyzzy qwerty asdf"},
+    {"id": "block-0x0b", "turn": 12, "role": "user", "kind": "resolved", "text": "Resolved: the threshold tuning analytical pass produced final intent retention defaults."},
+    {"id": "block-0x03", "turn": 13, "role": "assistant", "kind": "active", "text": "Pager keyword weights drive the retention score for every block in the working set."},
+    {"id": "block-0x02", "turn": 14, "role": "user", "kind": "active", "text": "What retention score should this block earn given the current intent IR?"},
+    {"id": "block-0x01", "turn": 15, "role": "assistant", "kind": "active", "text": "The pager retention score classifies each block against the active intent keyword set."}
+  ]
+}
