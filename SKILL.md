@@ -1,12 +1,20 @@
 ---
-
-## name: prosecode-heap-pager
-description: >-
-Context lifecycle manager and garbage collector. Profiles conversation histories,
-calculates token retention metrics against active intents, and optimizes the
-active context window by evicting or summarizing dead weights. Triggers when
-context size grows large, when token budgets are strained, or during pre-session
-validation phases following an intent compilation pass.
+name: prosecode-heap-pager
+description: >
+  Use when conversation history grows long, the active context approaches its
+  token budget, an agent is about to update a session-contract.limn, or
+  immediately after prosecode-intent-compiler resolves a new instruction.
+  Profiles historical blocks, scores each against the active Intent IR using
+  a zero-dependency keyword-intersection proxy and a recency decay term,
+  and emits retain / page / evict directives so the live context stays lean.
+  Do not use on greetings, single-turn prompts, system messages, or pipelines
+  whose context is already below the working threshold.
+license: MIT
+metadata:
+  author: rmichaelthomas
+  version: "0.1.0"
+  provenance: "Liminate bounded-vocabulary contract + paging-system MMU semantics + Intent IR keyword scoring"
+---
 
 # Prosecode Heap Pager Protocol
 
