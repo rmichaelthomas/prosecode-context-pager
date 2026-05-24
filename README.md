@@ -2,6 +2,8 @@
 
 Decides which parts of a long conversation an agent should keep, summarize, or throw away.
 
+*Part of the Prosecode family — a set of tools for writing, verifying, and transferring structured reasoning.*
+
 It reads the chat history one block at a time, scores each block against what the agent is currently trying to do, and writes the decision into a [session contract](https://github.com/rmichaelthomas/liminate-session-contracts) so the next pass knows what was kept and what was let go.
 
 ## What it does
@@ -27,9 +29,9 @@ set last-pager-pass to 2026-05-17T03:08:12+00:00
 
 The pager emits Liminate statements only. Every emitted line is checked against the bounded 35-word vocabulary before it is appended, so a vocabulary slip fails loudly instead of producing a malformed contract.
 
-## Part of the Liminate family
+## Built by Liminate
 
-Liminate is a prose-as-syntax programming language where plain English sentences execute directly. These five repos form a system for writing, verifying, and transferring structured reasoning.
+Liminate is a prose-as-syntax language where plain English sentences execute directly. These five repos form a system for writing, verifying, and transferring structured reasoning.
 
 | | Repo | What it does |
 |---|---|---|
